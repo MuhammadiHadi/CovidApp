@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="countryList"
+            type="com.example.covid_19_app.model.CountryListModelItem"/>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/iv_country"
+            android:layout_width="80dp"
+            android:src="@drawable/placeholder"
+            imageUrl="@{countryList.countryInfo.flag}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_height="50dp" />
+
+        <LinearLayout
+            android:id="@+id/linearlayout_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="7dp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_country"
+            app:layout_constraintStart_toEndOf="@+id/iv_country"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/country"
+                style="@style/tv16RobotoRegularWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{countryList.country}" />
+
+            <TextView
+                style="@style/tv16RobotoRegularWhite"
+                android:id="@+id/tv_cases"
+                android:layout_width="wrap_content"
+                android:text="@{countryList.cases}"
+                android:layout_height="wrap_content"
+
+                 />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
