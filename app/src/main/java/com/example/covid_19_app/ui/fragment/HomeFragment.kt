@@ -1,6 +1,7 @@
 package com.example.covid_19_app.ui.fragment
 
 import android.graphics.Color
+import android.graphics.Typeface
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -13,15 +14,17 @@ import com.example.covid_19_app.databinding.FragmentHomeBinding
 import com.example.covid_19_app.ui.base.BaseFragment
 import com.example.covid_19_app.utils.Constants
 import com.example.covid_19_app.utils.NetworkResult
+import com.example.covid_19_app.utils.RoundedBarChartRenderer
 import com.example.covid_19_app.viewModel.AllDataVMFactory
 import com.example.covid_19_app.viewModel.AllDataViewModel
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.github.mikephil.charting.utils.Utils
 
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
@@ -51,6 +54,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                     tvTotalDeaths.text= it.data.todayDeaths.toString()
                     //pieChart value
                     setPieChart(it.data.active,it.data.recovered,it.data.cases)
+                    setBarChart(it.data.active,it.data.cases,it.data.recovered,it.data.deaths)
                 }
                 is NetworkResult.Error->{
 
@@ -81,7 +85,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             val colors = mutableListOf<Int>()
             colors.add(ColorTemplate.rgb("#0000FF"))
             colors.add(ColorTemplate.rgb("#009900"))
-            colors.add(ColorTemplate.rgb("#FF0000"))
+            colors.add(ColorTemplate.rgb("#AB784E"))
             dataSet.colors = colors
 //            dataSet.setColors(*ColorTemplate.COLORFUL_COLORS)
             val data = PieData(dataSet)
@@ -140,12 +144,88 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                 xOffset = 50f
                 textSize = 12f
                 textColor = Color.WHITE
-//                typeface =
-//                    Typeface.createFromAsset(requireActivity().assets, "fonts/roboto.ttf")
+/*
+typeface =
+Typeface.createFromAsset(requireActivity().assets, "fonts/roboto.ttf")
+*/
                 formSize = 15f
 
             }
         }
+    }
+    private fun setBarChart(active:Float,cases:Float,recovered:Float,deaths:Float) {
+        // Create a list of colors to represent the color of each bar
+        val colors: ArrayList<Int> = ArrayList()
+        colors.add(Color.BLUE)
+        colors.add(ColorTemplate.rgb("#AB784E"))
+        colors.add(Color.GREEN)
+        colors.add(Color.RED)
+
+        //Bar Values
+        val entries: MutableList<BarEntry> = ArrayList()
+        entries.add(BarEntry(0f, active))
+        entries.add(BarEntry(1f, cases))
+        entries.add(BarEntry(2f, recovered))
+        entries.add(BarEntry(3f, deaths))
+
+
+        val dataSet = BarDataSet(entries, "bar Chart")
+        dataSet.apply {
+            this.colors = colors
+            valueTextColor = Color.WHITE
+            valueTextSize = 11f
+//            valueTypeface =
+//                Typeface.createFromAsset(requireActivity().assets, "fonts/roboto_medium.ttf")
+            setDrawValues(true)
+            // set custom value formatter that returns labels to display on top of bars
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    return "${value.toInt()}"
+                }
+            }
+        }
+
+
+        // Create custom renderer with 4dp corner radius
+        val roundedRenderer = RoundedBarChartRenderer(
+            binding.idBarChart,
+            binding.idBarChart.animator,
+            binding.idBarChart.viewPortHandler,
+            Utils.convertDpToPixel(4f)
+        )
+        val barData = BarData(dataSet)
+
+        binding.idBarChart.apply {
+            renderer = roundedRenderer
+            data = barData
+            setDrawValueAboveBar(true)
+            xAxis.setDrawGridLines(false)
+            setTouchEnabled(false)
+            axisRight.setDrawLabels(false)
+            axisLeft.setDrawLabels(false)
+            axisLeft.isEnabled = false
+            axisRight.isEnabled = false
+            setDrawBorders(false)
+            description.isEnabled = false
+            legend.isEnabled = false
+            barData.setDrawValues(true) }
+        val labels = arrayOf("active", "cases", "recovered", "deaths")
+        val xAxis = binding.idBarChart.xAxis
+        xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM
+//            setCenterAxisLabels(true)
+            xAxis.mLabelWidth = barData.barWidth.toInt() // set the bar width as label width
+            granularity = 1f
+//            isGranularityEnabled = false
+            labelCount = labels.size
+            valueFormatter = IndexAxisValueFormatter(labels)
+            setAvoidFirstLastClipping(false)
+            textColor = Color.WHITE
+            textSize = 11f
+//            typeface = Typeface.createFromAsset(requireActivity().assets, "fonts/roboto_medium.ttf")
+        }
+        binding.idBarChart.invalidate()
+
     }
 
 }
