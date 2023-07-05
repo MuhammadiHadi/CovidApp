@@ -1,7 +1,6 @@
 package com.example.covid_19_app.ui.fragment
 
 import android.graphics.Color
-import android.graphics.Typeface
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -41,33 +40,33 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             btnCountryTrack.setOnClickListener {
                 findNavController().navigate(R.id.action_homeFragment_to_allCountryFragment)
             }
-        viewModel.dataList.observe(viewLifecycleOwner, Observer {
-            when(it){
-                is NetworkResult.Success->{
-                     pbLoading.visibility=View.INVISIBLE
-                    tvTotal.text=it.data!!.cases.toString()
-                    tvActive.text= it.data.active.toString()
-                    tvRecovered.text= it.data.recovered.toString()
-                    tvDeaths.text= it.data.deaths.toString()
-                    tvCritical.text= it.data.critical.toString()
-                    tvTotalRecovered.text= it.data.todayRecovered.toString()
-                    tvTotalDeaths.text= it.data.todayDeaths.toString()
-                    //pieChart value
-                    setPieChart(it.data.active,it.data.recovered,it.data.cases)
-                    setBarChart(it.data.active,it.data.cases,it.data.recovered,it.data.deaths)
+            viewModel.dataList.observe(viewLifecycleOwner, Observer {
+                when(it){
+                    is NetworkResult.Success->{
+                        pbLoading.visibility=View.INVISIBLE
+                        tvTotal.text=it.data!!.cases.toString()
+                        tvActive.text= it.data.active.toString()
+                        tvRecovered.text= it.data.recovered.toString()
+                        tvDeaths.text= it.data.deaths.toString()
+                        tvCritical.text= it.data.critical.toString()
+                        tvTotalRecovered.text= it.data.todayRecovered.toString()
+                        tvTotalDeaths.text= it.data.todayDeaths.toString()
+                        //pieChart value
+                        setPieChart(it.data.active,it.data.recovered,it.data.cases)
+                        setBarChart(it.data.active,it.data.cases,it.data.recovered,it.data.deaths)
+                    }
+                    is NetworkResult.Error->{
+
+                        pbLoading.visibility=View.INVISIBLE
+                    }
+                    is NetworkResult.Loading->{
+
+
+                    }
                 }
-                is NetworkResult.Error->{
+            })
 
-                    pbLoading.visibility=View.INVISIBLE
-                }
-                is NetworkResult.Loading->{
-
-
-                }
-            }
-        })
-
-    }
+        }
     }
 
     private fun setPieChart(active:Float,recovered:Float,deaths:Float ) {
